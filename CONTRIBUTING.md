@@ -2,6 +2,8 @@
 
 Bienvenida/o al proyecto **Celdas**. Esta guía explica cómo trabajar en el repositorio.
 
+> **¿Buscas comandos del día a día?** Ve directo a [`docs/git-cheatsheet.md`](docs/git-cheatsheet.md) — es una referencia rápida con ejemplos prácticos. Este `CONTRIBUTING.md` cubre el "por qué" y las normas; la cheatsheet cubre el "cómo".
+
 ---
 
 ## Estrategia de ramas (Git Flow ligero)

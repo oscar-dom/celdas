@@ -76,6 +76,7 @@ Según en qué estés trabajando, lee solo los docs relevantes:
 
 | Si trabajas en... | Lee primero... |
 |------------------|----------------|
+| Git, commits, PRs, branching | `docs/git-cheatsheet.md` |
 | Diseño general / arquitectura | `docs/architecture.md` |
 | Base de datos / queries | `docs/database-schema.md` |
 | Lógica de subastas | `docs/auction-flow.md` + `docs/business-rules.md` |
@@ -117,7 +118,7 @@ chore/<x> ← mantenimiento, deps, configuración
 docs/<x>  ← solo documentación
 ```
 
-**Nunca** se pushea directo a `main` o `develop`. Ver `CONTRIBUTING.md` para el flujo completo.
+**Nunca** se pushea directo a `main` o `develop`. Ver `docs/git-cheatsheet.md` para comandos del día a día y `CONTRIBUTING.md` para el flujo completo.
 
 ---
 

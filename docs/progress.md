@@ -47,6 +47,7 @@
 - ✅ Secret scanning + push protection activados
 - ✅ Dependabot vulnerability alerts + automated security fixes activados
 - ✅ Skill `setup-git-flow` creado en `~/.claude/skills/` para replicar en futuros proyectos
+- ✅ `docs/git-cheatsheet.md` — referencia rápida de Git/PRs/commits para humanos e IAs (también incluida en el skill)
 - ⏳ commitlint + husky local (cuando exista `package.json` tras setup Next.js)
 
 ---
