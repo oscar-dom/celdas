@@ -103,9 +103,21 @@ Según en qué estés trabajando, lee solo los docs relevantes:
 
 - **Idioma del código:** Inglés (variables, funciones, comentarios técnicos).
 - **Idioma de la UI:** Español (audiencia hispanohablante).
-- **Commits:** Mensajes descriptivos en inglés sin atribuciones de IA.
-- **Branches:** `main` para producción, `feat/`, `fix/`, `chore/` para trabajo.
+- **Commits:** [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `chore:`, etc.). Sin atribuciones de IA.
 - **Estilo:** TypeScript estricto, ESLint + Prettier (a configurar en setup).
+
+### Git Flow
+
+```
+main      ← producción, protegida, solo PRs aprobados
+develop   ← integración, protegida, solo PRs aprobados
+feat/<x>  ← nueva funcionalidad (parte de develop, vuelve a develop)
+fix/<x>   ← bugfix
+chore/<x> ← mantenimiento, deps, configuración
+docs/<x>  ← solo documentación
+```
+
+**Nunca** se pushea directo a `main` o `develop`. Ver `CONTRIBUTING.md` para el flujo completo.
 
 ---
 

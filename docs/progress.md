@@ -33,6 +33,17 @@
 - ✅ `docs/backend.md` — server actions, cron jobs, integraciones
 - ✅ `docs/progress.md` — este archivo
 
+### Git Flow setup (2026-05-02)
+- ✅ GitHub CLI (`gh`) instalado y autenticado como `oscar-dom`
+- ✅ Rama `develop` creada y pusheada
+- ✅ `.github/PULL_REQUEST_TEMPLATE.md` — plantilla de PRs
+- ✅ `.github/ISSUE_TEMPLATE/bug_report.md` y `feature_request.md`
+- ✅ `.github/CODEOWNERS` — auto-asignación de revisores
+- ✅ `.github/workflows/ci.yml` — CI con lint + typecheck + build + commitlint
+- ✅ `CONTRIBUTING.md` — guía de contribución completa
+- ⏳ Branch protection rules (próximo paso, vía `gh api`)
+- ⏳ commitlint + husky local (cuando exista `package.json` tras setup Next.js)
+
 ---
 
 ## Próximos pasos inmediatos (Fase 0)
@@ -121,6 +132,9 @@
 | 2026-05-01 | Subasta sin pujas → celda vuelve a `locked` | Simple, sin penalizaciones |
 | 2026-05-01 | Duración subastas: admin libre, owner 1h-72h | Balance flexibilidad/control |
 | 2026-05-02 | Documentación distribuida en `docs/` (no todo en CLAUDE.md) | Eficiencia de tokens en Claude |
+| 2026-05-02 | Git Flow ligero: `main` + `develop` + `feat/fix/chore` | Profesional, escalable, separa producción de integración |
+| 2026-05-02 | Conventional Commits con linter automático | Historial legible, posibilidad de changelogs auto |
+| 2026-05-02 | GitHub Actions CI desde el inicio | Red de seguridad: bloquea merges con código roto |
 
 ---
 
