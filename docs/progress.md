@@ -41,7 +41,12 @@
 - ✅ `.github/CODEOWNERS` — auto-asignación de revisores
 - ✅ `.github/workflows/ci.yml` — CI con lint + typecheck + build + commitlint
 - ✅ `CONTRIBUTING.md` — guía de contribución completa
-- ⏳ Branch protection rules (próximo paso, vía `gh api`)
+- ✅ `.gitignore` reforzado con patrones de secretos
+- ✅ Repo cambiado a **público** (para acceder a branch protection en plan free)
+- ✅ Branch protection (rulesets) activa en `main` (squash-only, conversaciones resueltas, linear history) y `develop` (PR required)
+- ✅ Secret scanning + push protection activados
+- ✅ Dependabot vulnerability alerts + automated security fixes activados
+- ✅ Skill `setup-git-flow` creado en `~/.claude/skills/` para replicar en futuros proyectos
 - ⏳ commitlint + husky local (cuando exista `package.json` tras setup Next.js)
 
 ---
