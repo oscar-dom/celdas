@@ -1,6 +1,10 @@
+@AGENTS.md
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+> **Nota:** la línea `@AGENTS.md` de arriba importa automáticamente las reglas para agentes de IA generadas por Next.js 16 (avisos sobre breaking changes respecto a versiones anteriores). No la elimines.
 
 > **Documentación distribuida:** Este archivo es el punto de entrada y contiene la visión general. Los detalles técnicos están en `docs/` y se cargan bajo demanda para optimizar uso de tokens.
 
