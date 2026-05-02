@@ -1,0 +1,10 @@
+.next
+node_modules
+build
+out
+coverage
+pnpm-lock.yaml
+public
+*.svg
+*.ico
+next-env.d.ts
