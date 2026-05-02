@@ -34,7 +34,7 @@ Ver `docs/progress.md` para el estado detallado y próximos pasos.
 
 | Capa                | Tecnología               | Notas                                |
 | ------------------- | ------------------------ | ------------------------------------ |
-| Framework           | Next.js 15 (App Router)  | Full-stack en una codebase           |
+| Framework           | Next.js 16 (App Router)  | Full-stack en una codebase           |
 | Lenguaje            | TypeScript               | Type-safety crítica con dinero real  |
 | UI                  | Tailwind CSS + shadcn/ui | Diseño rápido con buenos defaults    |
 | DB / Auth / Storage | Supabase (PostgreSQL)    | Auth + Realtime + Storage incluidos  |
@@ -95,14 +95,19 @@ Según en qué estés trabajando, lee solo los docs relevantes:
 
 ## Comandos comunes
 
-_A documentar cuando esté el setup hecho. Por ahora:_
-
 ```bash
-# Inicializar proyecto (pendiente)
-# pnpm install
-# pnpm dev
-# pnpm build
+pnpm install         # Instalar dependencias (también instala hooks de husky)
+pnpm dev             # Servidor de desarrollo (Turbopack)
+pnpm build           # Build de producción
+pnpm start           # Servir build de producción
+pnpm lint            # ESLint
+pnpm lint:fix        # ESLint con auto-fix
+pnpm typecheck       # tsc --noEmit
+pnpm format          # Prettier --write .
+pnpm format:check    # Prettier --check . (lo que ejecuta el CI)
 ```
+
+> **Nota pnpm 10:** hay un bug que rompe `pnpm add` con un workspace.yaml de un solo paquete. Workaround: usar `pnpm add --ignore-workspace <paquete>` para añadir nuevas dependencias.
 
 ---
 
@@ -111,7 +116,7 @@ _A documentar cuando esté el setup hecho. Por ahora:_
 - **Idioma del código:** Inglés (variables, funciones, comentarios técnicos).
 - **Idioma de la UI:** Español (audiencia hispanohablante).
 - **Commits:** [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `chore:`, etc.). Sin atribuciones de IA.
-- **Estilo:** TypeScript estricto, ESLint + Prettier (a configurar en setup).
+- **Estilo:** TypeScript estricto, ESLint + Prettier (configurado, validado por husky pre-commit).
 
 ### Git Flow
 
@@ -141,4 +146,4 @@ docs/<x>  ← solo documentación
 
 ## Última actualización
 
-**2026-05-01:** Plan validado, estructura de docs creada, listos para iniciar Fase 0.
+**2026-05-02:** Fase 0 completada — Next.js 16 + Tailwind 4 + ESLint + Prettier + husky/commitlint + shadcn/ui (base-nova) inicializados. Pendiente: cuentas externas (Supabase, Vercel, Stripe).
