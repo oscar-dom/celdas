@@ -44,26 +44,32 @@ Aplicación **monolítica full-stack** construida sobre Next.js 15 (App Router).
 ## Decisiones arquitectónicas clave
 
 ### 1. Next.js App Router (no Pages Router)
+
 - **Por qué:** Server Components reducen JS enviado al cliente, mejor SEO, streaming nativo.
 - **Trade-off:** Curva de aprendizaje mayor, pero la documentación oficial es excelente.
 
 ### 2. Supabase como BaaS (Backend-as-a-Service)
+
 - **Por qué:** Una sola plataforma para DB + Auth + Storage + Realtime. Open-source (no lock-in extremo, podemos migrar a PostgreSQL puro).
 - **Trade-off:** Dependencia de un proveedor; mitigado porque Supabase = PostgreSQL estándar + servicios opcionales.
 
 ### 3. Server Actions sobre API Routes
+
 - **Por qué:** Type-safe, menos boilerplate, integración directa con React.
 - **Cuándo usar API Routes:** Solo para webhooks externos (Stripe, PayPal) que no pueden usar Server Actions.
 
 ### 4. RLS (Row Level Security) como capa de seguridad principal
+
 - **Por qué:** La seguridad vive en la DB, no en el código de aplicación. Imposible bypassear desde el cliente.
 - **Implicación:** Todas las queries deben funcionar con RLS activo. Operaciones privilegiadas usan service role key (solo en server).
 
 ### 5. Pre-autorización de pagos al pujar (no captura inmediata)
+
 - **Por qué:** Evita cargar dinero real hasta que se gane la subasta. Si pierdes, se libera la pre-autorización.
 - **Implicación:** Stripe `payment_intent` con `capture_method: 'manual'`.
 
 ### 6. Cron jobs para operaciones críticas (no triggers de DB)
+
 - **Por qué:** Más fácil de debuggear, idempotente, observabilidad clara.
 - **Frecuencia:** Cada minuto para cierre de subastas; diario para expiraciones anuales.
 
@@ -89,20 +95,24 @@ Aplicación **monolítica full-stack** construida sobre Next.js 15 (App Router).
 ## Capa por capa
 
 ### Capa de presentación (`src/app/`, `src/components/`)
+
 - **Server Components** por defecto (mejor performance).
 - **Client Components** solo para interactividad (forms, realtime, animaciones).
 - Composición con `shadcn/ui` (componentes copiados, no dependencia, fácil customización).
 
 ### Capa de lógica de negocio (`src/server-actions/`, `src/lib/`)
+
 - Server Actions agrupadas por dominio: `auctions/`, `bids/`, `cells/`, `payments/`, `users/`.
 - `lib/` contiene utilidades reutilizables (clientes Supabase, Stripe, PayPal, validadores).
 
 ### Capa de datos (`supabase/`)
+
 - Migrations versionadas en `supabase/migrations/`.
 - RLS policies definidas en cada migration.
 - Seeds en `supabase/seed.sql` (9 celdas iniciales).
 
 ### Capa de integraciones externas
+
 - **Stripe:** En `src/lib/stripe/`, con cliente server-side y webhook handler.
 - **PayPal:** En `src/lib/paypal/`, similar estructura.
 - **Email** (futuro): Resend en `src/lib/email/`.
@@ -120,6 +130,7 @@ Aplicación **monolítica full-stack** construida sobre Next.js 15 (App Router).
 ## Escalabilidad futura
 
 Si el proyecto crece más allá del MVP:
+
 - **DB:** Supabase escala vertical fácilmente. Si necesitamos sharding, migrar a PostgreSQL gestionado en RDS/Cloud SQL.
 - **Cron jobs:** Si Vercel Cron no basta, migrar a un worker dedicado (BullMQ + Redis).
 - **Realtime:** Supabase Realtime escala bien; alternativa Pusher si necesitamos más conexiones.

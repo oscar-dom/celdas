@@ -56,6 +56,7 @@ src/app/
 ```
 
 **Convenciones:**
+
 - Grupos `()` no afectan la URL pero permiten layouts distintos.
 - Server Components por defecto (`'use server'` no necesario para fetching).
 - Client Components con `'use client'` solo cuando hay interactividad (forms, realtime, animaciones).
@@ -65,56 +66,67 @@ src/app/
 ## Componentes principales
 
 ### `<CellGrid />` (página principal)
+
 - Grid 3x3 de 9 celdas.
 - Cada celda muestra: imagen actual (si owned) / placeholder (locked) / countdown (in_auction).
 - Click → navega a `/cell/[id]`.
 - Animaciones sutiles (hover, transiciones).
 
 ### `<CellCard />`
+
 Variantes según estado:
+
 - **`locked`**: gris, candado icon, "Próximamente".
 - **`in_auction`**: borde animado, countdown, "En subasta - actual: X€".
 - **`owned`**: imagen + nombre del dueño + mensaje.
 - **`for_sale`**: badge "En venta" + precio o "En subasta".
 
 ### `<CellDetail />`
+
 - Imagen ampliada arriba.
 - Info debajo: precio actual, countdown si subasta, dueño actual + mensaje.
 - Pestañas: "Subasta actual" | "Historial" | "Acciones" (si soy dueño).
 - Sección historial: lista cronológica de propietarios pasados con sus mensajes y precios.
 
 ### `<BidForm />` (Client Component)
+
 - Input de cantidad con incremento mínimo pre-rellenado.
 - Stripe PaymentElement embebido.
 - Botón "Pujar X€" → llama Server Action.
 - Estados: loading, success, error.
 
 ### `<BidHistory />` (Client Component, realtime)
+
 - Lista de pujas en tiempo real.
 - Suscripción a canal Supabase Realtime.
 - Animación al añadir nueva puja (slide-in).
 
 ### `<Countdown />` (Client Component)
+
 - Tiempo restante hasta `ends_at`.
 - Re-renderiza cada segundo.
 - Cambia color cuando queda < 2 min (warning anti-sniping).
 - Muestra extensión cuando se prolonga ("¡Subasta extendida!").
 
 ### `<AdminAuctionForm />`
+
 - Form para abrir subasta (admin) con duración + precio inicial.
 
 ### `<OwnerSellForm />`
+
 - Tabs: "Subasta" | "Precio fijo".
 - Subasta: duración (slider 1h-72h) + precio inicial.
 - Precio fijo: solo precio.
 
 ### `<ImageUploadForm />`
+
 - Drag & drop de imagen.
 - Preview.
 - Mensaje opcional.
 - Sube a Supabase Storage → entra en `moderation_queue`.
 
 ### `<ModerationPanel />` (admin)
+
 - Lista de items pending.
 - Vista lado a lado: imagen propuesta + imagen actual de la celda.
 - Botones aprobar / rechazar (con campo de nota).
@@ -124,14 +136,17 @@ Variantes según estado:
 ## Estado global y data fetching
 
 ### Server data
+
 - Fetched en Server Components con queries de Supabase server-side.
 - Cacheo con `revalidatePath` / `revalidateTag` tras mutaciones.
 
 ### Client state
+
 - **No usar Redux/Zustand para empezar.** React state local + Server Actions es suficiente.
 - Si se complica: Zustand para estado UI no-server (ej: modales abiertos).
 
 ### Realtime
+
 - Custom hook `useAuctionRealtime(auctionId)` para suscripción.
 - Actualiza React Query cache (si lo añadimos) o estado local.
 
@@ -140,12 +155,14 @@ Variantes según estado:
 ## Estilo y diseño visual
 
 ### Sistema de diseño
+
 - **Colores:** definir paleta en `tailwind.config.ts` con `primary`, `secondary`, etc.
 - **Tipografía:** Inter (Google Fonts) o similar.
 - **Spacing:** sistema de Tailwind (4, 8, 12, 16, 24, 32, 48, 64).
 - **Border radius:** consistente, prefer `rounded-lg` o `rounded-xl`.
 
 ### Componentes shadcn/ui a instalar (orden recomendado)
+
 1. `button`, `input`, `label`, `card`
 2. `dialog`, `sheet`, `tabs`
 3. `form`, `toast`, `alert`
@@ -153,12 +170,14 @@ Variantes según estado:
 5. `dropdown-menu`, `select`
 
 ### Accesibilidad
+
 - Todos los componentes interactivos con `aria-*` apropiados.
 - Contraste mínimo WCAG AA.
 - Navegación con teclado funcional.
 - Loading states con `aria-busy` y skeletons.
 
 ### Responsive
+
 - Mobile-first (la mayoría del tráfico será mobile).
 - Grid 3x3 en desktop → 1 columna en mobile, 3 en md, etc.
 - Modal full-screen en mobile, dialog centrado en desktop.
@@ -171,13 +190,14 @@ Variantes según estado:
 **Futuro:** `next-intl` cuando necesitemos inglés u otros idiomas.
 
 Pero ya escribir strings centralizadas en `src/lib/strings.ts` para facilitar migración:
+
 ```typescript
 export const t = {
   cells: {
-    locked: 'Próximamente',
-    inAuction: 'En subasta',
-    placeBid: 'Pujar',
-    timeLeft: 'Tiempo restante',
+    locked: "Próximamente",
+    inAuction: "En subasta",
+    placeBid: "Pujar",
+    timeLeft: "Tiempo restante",
   },
   // ...
 };

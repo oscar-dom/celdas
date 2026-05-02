@@ -16,6 +16,7 @@
 ## Completado
 
 ### Inicialización (2026-05-01)
+
 - ✅ Repositorio Git local creado en `Desktop/GitHub/Celdas`
 - ✅ `CLAUDE.md` inicial creado
 - ✅ `README.md` y `.gitignore` base
@@ -23,6 +24,7 @@
 - ✅ Plan completo validado con el usuario
 
 ### Documentación (2026-05-02)
+
 - ✅ `CLAUDE.md` actualizado con visión, stack y referencias
 - ✅ `docs/architecture.md` — arquitectura técnica completa
 - ✅ `docs/database-schema.md` — schema PostgreSQL + RLS
@@ -34,6 +36,7 @@
 - ✅ `docs/progress.md` — este archivo
 
 ### Git Flow setup (2026-05-02)
+
 - ✅ GitHub CLI (`gh`) instalado y autenticado como `oscar-dom`
 - ✅ Rama `develop` creada y pusheada
 - ✅ `.github/PULL_REQUEST_TEMPLATE.md` — plantilla de PRs
@@ -55,6 +58,7 @@
 ## Próximos pasos inmediatos (Fase 0)
 
 ### Setup del proyecto
+
 - [ ] Crear repositorio en GitHub y conectar el local
 - [ ] Inicializar Next.js 15 con TypeScript en `Desktop/GitHub/Celdas`
   - Comando: `pnpm dlx create-next-app@latest . --typescript --tailwind --app --no-src-dir=false`
@@ -64,6 +68,7 @@
 - [ ] Setup de paths absolutos en `tsconfig.json` (`@/`)
 
 ### Supabase
+
 - [ ] Crear cuenta y proyecto en supabase.com
 - [ ] Instalar Supabase CLI localmente
 - [ ] `supabase init` en el proyecto
@@ -73,12 +78,14 @@
 - [ ] Generar tipos TypeScript: `supabase gen types`
 
 ### Vercel
+
 - [ ] Crear cuenta Vercel
 - [ ] Conectar repositorio GitHub
 - [ ] Configurar variables de entorno en Vercel dashboard
 - [ ] Deploy inicial
 
 ### Stripe
+
 - [ ] Crear cuenta Stripe (modo test)
 - [ ] Activar Stripe Connect Express
 - [ ] Configurar webhook endpoint local (Stripe CLI: `stripe listen`)
@@ -129,18 +136,18 @@
 
 ## Decisiones tomadas
 
-| Fecha | Decisión | Motivo |
-|-------|----------|--------|
-| 2026-05-01 | Stack: Next.js 15 + TypeScript + Supabase + Vercel | Simple, gratis, bien documentado |
-| 2026-05-01 | Pagos: Stripe + PayPal | Stripe principal por Connect; PayPal opcional |
-| 2026-05-01 | Realtime con WebSockets (Supabase Realtime) | Mejor UX en pujas |
-| 2026-05-01 | Anti-sniping: extender 2 min si puja en últimos 2 min | Estándar industria, justo |
-| 2026-05-01 | Subasta sin pujas → celda vuelve a `locked` | Simple, sin penalizaciones |
-| 2026-05-01 | Duración subastas: admin libre, owner 1h-72h | Balance flexibilidad/control |
-| 2026-05-02 | Documentación distribuida en `docs/` (no todo en CLAUDE.md) | Eficiencia de tokens en Claude |
-| 2026-05-02 | Git Flow ligero: `main` + `develop` + `feat/fix/chore` | Profesional, escalable, separa producción de integración |
-| 2026-05-02 | Conventional Commits con linter automático | Historial legible, posibilidad de changelogs auto |
-| 2026-05-02 | GitHub Actions CI desde el inicio | Red de seguridad: bloquea merges con código roto |
+| Fecha      | Decisión                                                    | Motivo                                                   |
+| ---------- | ----------------------------------------------------------- | -------------------------------------------------------- |
+| 2026-05-01 | Stack: Next.js 15 + TypeScript + Supabase + Vercel          | Simple, gratis, bien documentado                         |
+| 2026-05-01 | Pagos: Stripe + PayPal                                      | Stripe principal por Connect; PayPal opcional            |
+| 2026-05-01 | Realtime con WebSockets (Supabase Realtime)                 | Mejor UX en pujas                                        |
+| 2026-05-01 | Anti-sniping: extender 2 min si puja en últimos 2 min       | Estándar industria, justo                                |
+| 2026-05-01 | Subasta sin pujas → celda vuelve a `locked`                 | Simple, sin penalizaciones                               |
+| 2026-05-01 | Duración subastas: admin libre, owner 1h-72h                | Balance flexibilidad/control                             |
+| 2026-05-02 | Documentación distribuida en `docs/` (no todo en CLAUDE.md) | Eficiencia de tokens en Claude                           |
+| 2026-05-02 | Git Flow ligero: `main` + `develop` + `feat/fix/chore`      | Profesional, escalable, separa producción de integración |
+| 2026-05-02 | Conventional Commits con linter automático                  | Historial legible, posibilidad de changelogs auto        |
+| 2026-05-02 | GitHub Actions CI desde el inicio                           | Red de seguridad: bloquea merges con código roto         |
 
 ---
 
@@ -157,7 +164,7 @@
 
 ## Bloqueos / Riesgos
 
-- *(Ninguno actualmente)*
+- _(Ninguno actualmente)_
 
 ---
 

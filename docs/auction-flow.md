@@ -45,6 +45,7 @@
 ## Apertura de subasta
 
 ### Admin abre subasta de celda `locked`
+
 **Server Action:** `openAdminAuction({ cellId, startingPrice, durationDays })`
 
 ```typescript
@@ -52,28 +53,30 @@
 async function openAdminAuction({ cellId, startingPrice, durationDays }) {
   await assertIsAdmin();
   const cell = await getCellById(cellId);
-  assert(cell.status === 'locked', 'Cell must be locked');
+  assert(cell.status === "locked", "Cell must be locked");
 
   const endsAt = new Date(Date.now() + durationDays * 86400 * 1000);
 
   await db.transaction(async (tx) => {
     await tx.insert(auctions).values({
       cell_id: cellId,
-      opened_by: 'admin',
+      opened_by: "admin",
       opened_by_user_id: currentUser.id,
       starting_price: startingPrice,
       ends_at: endsAt,
       original_ends_at: endsAt,
     });
-    await tx.update(cells).set({ status: 'in_auction' }).where(eq(cells.id, cellId));
+    await tx.update(cells).set({ status: "in_auction" }).where(eq(cells.id, cellId));
   });
 }
 ```
 
 ### Owner abre subasta de su celda `owned`
+
 **Server Action:** `openOwnerAuction({ cellId, startingPrice, durationHours })`
 
 Validaciones extra:
+
 - `currentUser.id === cell.current_owner_id`.
 - `1 <= durationHours <= 72`.
 - No existe subasta activa ni listing fijo de esta celda.
@@ -92,22 +95,24 @@ async function placeBid({ auctionId, amount }) {
   const auction = await getAuction(auctionId);
 
   // Validaciones
-  assert(auction.status === 'active', 'Auction not active');
-  assert(auction.ends_at > new Date(), 'Auction ended');
-  assert(user.id !== auction.current_highest_bidder_id, 'Already winning');
+  assert(auction.status === "active", "Auction not active");
+  assert(auction.ends_at > new Date(), "Auction ended");
+  assert(user.id !== auction.current_highest_bidder_id, "Already winning");
 
   const cell = await getCellById(auction.cell_id);
-  assert(user.id !== cell.current_owner_id, 'Cannot bid on own cell');
+  assert(user.id !== cell.current_owner_id, "Cannot bid on own cell");
 
-  const minNext = (auction.current_highest_bid ?? auction.starting_price - 1) + getMinIncrement(auction.current_highest_bid);
+  const minNext =
+    (auction.current_highest_bid ?? auction.starting_price - 1) +
+    getMinIncrement(auction.current_highest_bid);
   assert(amount >= minNext, `Min bid is ${minNext}`);
 
   // Pre-autorización Stripe
   const paymentIntent = await stripe.paymentIntents.create({
     amount,
-    currency: 'eur',
+    currency: "eur",
     customer: user.stripe_customer_id,
-    capture_method: 'manual',
+    capture_method: "manual",
     metadata: { auction_id: auctionId, bidder_id: user.id },
   });
 
@@ -125,7 +130,8 @@ async function placeBid({ auctionId, amount }) {
       stripe_payment_intent_id: paymentIntent.id,
       is_winning: true,
     });
-    await tx.update(bids)
+    await tx
+      .update(bids)
       .set({ is_winning: false })
       .where(and(eq(bids.auction_id, auctionId), ne(bids.id, newBidId)));
 
@@ -136,11 +142,14 @@ async function placeBid({ auctionId, amount }) {
       newEndsAt = new Date(Date.now() + AUCTION_CONFIG.ANTI_SNIPING_EXTENSION_MS);
     }
 
-    await tx.update(auctions).set({
-      current_highest_bid: amount,
-      current_highest_bidder_id: user.id,
-      ends_at: newEndsAt,
-    }).where(eq(auctions.id, auctionId));
+    await tx
+      .update(auctions)
+      .set({
+        current_highest_bid: amount,
+        current_highest_bidder_id: user.id,
+        ends_at: newEndsAt,
+      })
+      .where(eq(auctions.id, auctionId));
   });
 
   // Realtime broadcast (Supabase lo hace automáticamente con triggers de Postgres)
@@ -151,29 +160,40 @@ async function placeBid({ auctionId, amount }) {
 ### Realtime con Supabase
 
 **En el cliente** (Client Component en `cell/[id]/page.tsx`):
+
 ```typescript
 useEffect(() => {
   const channel = supabase
     .channel(`auction:${auctionId}`)
-    .on('postgres_changes', {
-      event: '*',
-      schema: 'public',
-      table: 'bids',
-      filter: `auction_id=eq.${auctionId}`,
-    }, (payload) => {
-      // Actualizar UI con nueva puja
-    })
-    .on('postgres_changes', {
-      event: 'UPDATE',
-      schema: 'public',
-      table: 'auctions',
-      filter: `id=eq.${auctionId}`,
-    }, (payload) => {
-      // Actualizar countdown si ends_at cambió (anti-sniping)
-    })
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "bids",
+        filter: `auction_id=eq.${auctionId}`,
+      },
+      (payload) => {
+        // Actualizar UI con nueva puja
+      },
+    )
+    .on(
+      "postgres_changes",
+      {
+        event: "UPDATE",
+        schema: "public",
+        table: "auctions",
+        filter: `id=eq.${auctionId}`,
+      },
+      (payload) => {
+        // Actualizar countdown si ends_at cambió (anti-sniping)
+      },
+    )
     .subscribe();
 
-  return () => { supabase.removeChannel(channel); };
+  return () => {
+    supabase.removeChannel(channel);
+  };
 }, [auctionId]);
 ```
 
@@ -188,8 +208,10 @@ useEffect(() => {
 export async function GET(req: Request) {
   assertCronAuth(req);
 
-  const expired = await db.select().from(auctions)
-    .where(and(eq(auctions.status, 'active'), lte(auctions.ends_at, new Date())));
+  const expired = await db
+    .select()
+    .from(auctions)
+    .where(and(eq(auctions.status, "active"), lte(auctions.ends_at, new Date())));
 
   for (const auction of expired) {
     await closeAuction(auction);
@@ -204,8 +226,8 @@ async function closeAuction(auction) {
   if (!winningBid) {
     // Sin pujas → cancelar
     await db.transaction(async (tx) => {
-      await tx.update(auctions).set({ status: 'cancelled' }).where(eq(auctions.id, auction.id));
-      await tx.update(cells).set({ status: 'locked' }).where(eq(cells.id, auction.cell_id));
+      await tx.update(auctions).set({ status: "cancelled" }).where(eq(auctions.id, auction.id));
+      await tx.update(cells).set({ status: "locked" }).where(eq(cells.id, auction.cell_id));
     });
     return;
   }
@@ -218,10 +240,10 @@ async function closeAuction(auction) {
   const ownerPayout = winningBid.amount - systemFee;
 
   // Si era subasta de owner → payout al owner
-  if (auction.opened_by === 'owner') {
+  if (auction.opened_by === "owner") {
     await stripe.transfers.create({
       amount: ownerPayout,
-      currency: 'eur',
+      currency: "eur",
       destination: auction.opened_by_user.stripe_account_id,
     });
   }
@@ -229,12 +251,15 @@ async function closeAuction(auction) {
   // Cerrar ownership anterior y crear nuevo
   await db.transaction(async (tx) => {
     // Cerrar ownership anterior (si había)
-    await tx.update(cellOwnershipHistory)
+    await tx
+      .update(cellOwnershipHistory)
       .set({ sold_at: new Date(), sale_price: winningBid.amount })
-      .where(and(
-        eq(cellOwnershipHistory.cell_id, auction.cell_id),
-        isNull(cellOwnershipHistory.sold_at),
-      ));
+      .where(
+        and(
+          eq(cellOwnershipHistory.cell_id, auction.cell_id),
+          isNull(cellOwnershipHistory.sold_at),
+        ),
+      );
 
     // Nuevo ownership
     await tx.insert(cellOwnershipHistory).values({
@@ -242,30 +267,43 @@ async function closeAuction(auction) {
       owner_id: winningBid.bidder_id,
       acquired_at: new Date(),
       acquisition_price: winningBid.amount,
-      acquisition_type: 'auction',
+      acquisition_type: "auction",
     });
 
     // Actualizar cell
-    await tx.update(cells).set({
-      current_owner_id: winningBid.bidder_id,
-      acquired_at: new Date(),
-      expires_at: new Date(Date.now() + 365 * 86400 * 1000),
-      current_acquisition_price: winningBid.amount,
-      status: 'owned',
-    }).where(eq(cells.id, auction.cell_id));
+    await tx
+      .update(cells)
+      .set({
+        current_owner_id: winningBid.bidder_id,
+        acquired_at: new Date(),
+        expires_at: new Date(Date.now() + 365 * 86400 * 1000),
+        current_acquisition_price: winningBid.amount,
+        status: "owned",
+      })
+      .where(eq(cells.id, auction.cell_id));
 
     // Cerrar auction
-    await tx.update(auctions).set({
-      status: 'completed',
-      winner_id: winningBid.bidder_id,
-      final_price: winningBid.amount,
-    }).where(eq(auctions.id, auction.id));
+    await tx
+      .update(auctions)
+      .set({
+        status: "completed",
+        winner_id: winningBid.bidder_id,
+        final_price: winningBid.amount,
+      })
+      .where(eq(auctions.id, auction.id));
 
     // Registrar transactions
     await tx.insert(transactions).values([
-      { user_id: winningBid.bidder_id, type: 'bid_payment', amount: winningBid.amount, system_fee: systemFee, /* ... */ },
-      { user_id: SYSTEM_USER_ID, type: 'system_fee', amount: systemFee, /* ... */ },
-      ...(auction.opened_by === 'owner' ? [{ user_id: auction.opened_by_user_id, type: 'payout', amount: ownerPayout, /* ... */ }] : []),
+      {
+        user_id: winningBid.bidder_id,
+        type: "bid_payment",
+        amount: winningBid.amount,
+        system_fee: systemFee /* ... */,
+      },
+      { user_id: SYSTEM_USER_ID, type: "system_fee", amount: systemFee /* ... */ },
+      ...(auction.opened_by === "owner"
+        ? [{ user_id: auction.opened_by_user_id, type: "payout", amount: ownerPayout /* ... */ }]
+        : []),
     ]);
   });
 
@@ -285,8 +323,10 @@ async function closeAuction(auction) {
 export async function GET(req: Request) {
   assertCronAuth(req);
 
-  const expired = await db.select().from(cells)
-    .where(and(eq(cells.status, 'owned'), lte(cells.expires_at, new Date())));
+  const expired = await db
+    .select()
+    .from(cells)
+    .where(and(eq(cells.status, "owned"), lte(cells.expires_at, new Date())));
 
   for (const cell of expired) {
     await expireCell(cell);
@@ -305,18 +345,16 @@ async function expireCell(cell) {
 
   await db.transaction(async (tx) => {
     // Cerrar ownership
-    await tx.update(cellOwnershipHistory)
+    await tx
+      .update(cellOwnershipHistory)
       .set({ sold_at: new Date() })
-      .where(and(
-        eq(cellOwnershipHistory.cell_id, cell.id),
-        isNull(cellOwnershipHistory.sold_at),
-      ));
+      .where(and(eq(cellOwnershipHistory.cell_id, cell.id), isNull(cellOwnershipHistory.sold_at)));
 
     // Crear nueva subasta
     const endsAt = new Date(Date.now() + 7 * 86400 * 1000);
     await tx.insert(auctions).values({
       cell_id: cell.id,
-      opened_by: 'admin',
+      opened_by: "admin",
       opened_by_user_id: SYSTEM_USER_ID,
       starting_price: cell.current_acquisition_price,
       ends_at: endsAt,
@@ -324,20 +362,23 @@ async function expireCell(cell) {
     });
 
     // Actualizar cell
-    await tx.update(cells).set({
-      status: 'in_auction',
-      current_owner_id: null,
-      current_image_url: null,
-      owner_message: null,
-      acquired_at: null,
-      expires_at: null,
-      current_acquisition_price: null,
-    }).where(eq(cells.id, cell.id));
+    await tx
+      .update(cells)
+      .set({
+        status: "in_auction",
+        current_owner_id: null,
+        current_image_url: null,
+        owner_message: null,
+        acquired_at: null,
+        expires_at: null,
+        current_acquisition_price: null,
+      })
+      .where(eq(cells.id, cell.id));
 
     // Registrar refund
     await tx.insert(transactions).values({
       user_id: cell.current_owner_id,
-      type: 'refund',
+      type: "refund",
       amount: refund,
       /* ... */
     });
