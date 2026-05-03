@@ -71,13 +71,19 @@
 
 ### Supabase
 
-- [ ] Crear cuenta y proyecto en supabase.com
-- [ ] Instalar Supabase CLI localmente
-- [ ] `supabase init` en el proyecto
-- [ ] Crear primera migration con schema completo (de `docs/database-schema.md`)
-- [ ] Crear `supabase/seed.sql` con las 9 celdas iniciales
-- [ ] Configurar variables de entorno (`.env.local` + `.env.example`)
-- [ ] Generar tipos TypeScript: `supabase gen types`
+- [ ] Crear cuenta y proyecto en supabase.com (acción del usuario)
+- [x] Instalar Supabase CLI localmente (como dev dep `supabase@2.98.0`, ejecutable vía `pnpm exec supabase`)
+- [x] `supabase init` en el proyecto (genera `supabase/config.toml` y `.gitignore`)
+- [x] Crear primera migration con schema completo (`supabase/migrations/20260503095729_initial_schema.sql` — 8 tablas, ENUMs, indexes, RLS policies, triggers)
+- [x] Crear `supabase/seed.sql` con las 9 celdas iniciales (todas en `locked`)
+- [x] Crear `.env.example` con placeholders de Supabase, Stripe, PayPal, Cron
+- [x] Instalar `@supabase/supabase-js` y `@supabase/ssr`
+- [x] Crear clientes Supabase: `lib/supabase/{client,server,admin,middleware}.ts` + `src/middleware.ts` (refresh de sesión)
+- [x] Scripts en package.json: `db:start`, `db:stop`, `db:reset`, `db:diff`, `db:types`
+- [ ] Crear `.env.local` con credenciales reales (acción del usuario tras crear el proyecto remoto)
+- [ ] `supabase link --project-ref <ref>` (conectar local con remoto)
+- [ ] `supabase db push` (aplicar migration al remoto)
+- [ ] `pnpm db:types` (generar tipos TypeScript desde el schema real)
 
 ### Vercel
 
