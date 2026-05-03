@@ -1,19 +1,12 @@
 -- =====================================================================
--- Seed data for Celdas
+-- Seed data for Celdas — local development only
 -- =====================================================================
--- Inserts the 9 fixed cells in 'locked' state. Admins open auctions
--- on each cell from the admin panel (no auctions seeded so the system
--- starts empty and predictable).
+-- This file runs on `supabase db reset` to populate the local database
+-- with development data (e.g. fake users, sample auctions).
+--
+-- Infrastructure data (the 9 fixed cells) lives in a migration so it
+-- exists in every environment. See:
+--   supabase/migrations/20260503104957_seed_initial_cells.sql
+--
+-- Add development-only fixtures here as the project grows.
 -- =====================================================================
-
-insert into public.cells (id, status) values
-  (1, 'locked'),
-  (2, 'locked'),
-  (3, 'locked'),
-  (4, 'locked'),
-  (5, 'locked'),
-  (6, 'locked'),
-  (7, 'locked'),
-  (8, 'locked'),
-  (9, 'locked')
-on conflict (id) do nothing;

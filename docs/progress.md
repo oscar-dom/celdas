@@ -71,19 +71,21 @@
 
 ### Supabase
 
-- [ ] Crear cuenta y proyecto en supabase.com (acción del usuario)
+- [x] Crear cuenta y proyecto en supabase.com (project ref: `jurarifycdnkidnqyrbi`, región Frankfurt)
 - [x] Instalar Supabase CLI localmente (como dev dep `supabase@2.98.0`, ejecutable vía `pnpm exec supabase`)
 - [x] `supabase init` en el proyecto (genera `supabase/config.toml` y `.gitignore`)
 - [x] Crear primera migration con schema completo (`supabase/migrations/20260503095729_initial_schema.sql` — 8 tablas, ENUMs, indexes, RLS policies, triggers)
-- [x] Crear `supabase/seed.sql` con las 9 celdas iniciales (todas en `locked`)
-- [x] Crear `.env.example` con placeholders de Supabase, Stripe, PayPal, Cron
+- [x] Crear segunda migration con las 9 celdas (`supabase/migrations/20260503104957_seed_initial_cells.sql`) — datos de infraestructura, no fixtures de desarrollo
+- [x] `seed.sql` reservado para fixtures de desarrollo locales (vacío por ahora)
+- [x] `.env.example` con placeholders de Supabase, Stripe, PayPal, Cron
 - [x] Instalar `@supabase/supabase-js` y `@supabase/ssr`
-- [x] Crear clientes Supabase: `lib/supabase/{client,server,admin,middleware}.ts` + `src/middleware.ts` (refresh de sesión)
-- [x] Scripts en package.json: `db:start`, `db:stop`, `db:reset`, `db:diff`, `db:types`
-- [ ] Crear `.env.local` con credenciales reales (acción del usuario tras crear el proyecto remoto)
-- [ ] `supabase link --project-ref <ref>` (conectar local con remoto)
-- [ ] `supabase db push` (aplicar migration al remoto)
-- [ ] `pnpm db:types` (generar tipos TypeScript desde el schema real)
+- [x] Clientes Supabase: `lib/supabase/{client,server,admin,middleware}.ts` + `src/middleware.ts` (refresh de sesión)
+- [x] Scripts en package.json: `db:start`, `db:stop`, `db:reset`, `db:diff`, `db:push`, `db:types`, `db:types:local`
+- [x] `supabase login` + `supabase link --project-ref jurarifycdnkidnqyrbi` (autenticado)
+- [x] `supabase db push` aplicado al remoto (ambas migrations en sync)
+- [x] Tipos TypeScript generados desde el schema real (`src/lib/supabase/database.types.ts`)
+- [ ] Crear `.env.local` con credenciales reales (acción del usuario)
+- [ ] Validar conexión end-to-end con `pnpm dev` (server fetch a `cells`)
 
 ### Vercel
 
