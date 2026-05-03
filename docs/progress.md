@@ -89,10 +89,11 @@
 
 ### Vercel
 
-- [ ] Crear cuenta Vercel
-- [ ] Conectar repositorio GitHub
-- [ ] Configurar variables de entorno en Vercel dashboard
-- [ ] Deploy inicial
+- [x] `vercel.json` con región `fra1` (Frankfurt, junto al proyecto Supabase para minimizar latencia)
+- [ ] Crear cuenta Vercel y conectar repositorio (acción del usuario)
+- [ ] Configurar variables de entorno en Vercel dashboard (las 3 de Supabase, el resto se irán añadiendo por fase)
+- [ ] Deploy inicial — la URL de producción saldrá de `main`, las preview de `develop` y PRs
+- [ ] Verificar `/api/health/db` en la URL pública
 
 ### Stripe
 
