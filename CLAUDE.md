@@ -107,7 +107,7 @@ pnpm format          # Prettier --write .
 pnpm format:check    # Prettier --check . (lo que ejecuta el CI)
 ```
 
-> **Nota pnpm 10:** hay un bug que rompe `pnpm add` con un workspace.yaml de un solo paquete. Workaround: usar `pnpm add --ignore-workspace <paquete>` para añadir nuevas dependencias.
+> **Nota:** El proyecto **no usa `pnpm-workspace.yaml`** (lo eliminamos porque rompía `pnpm add` con el bug de pnpm 10 y confundía a Vercel haciéndole creer que era un monorepo). Las opciones que vivían allí (`ignoredBuiltDependencies`) ahora están en la sección `pnpm` de `package.json`.
 
 ---
 
