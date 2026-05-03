@@ -78,12 +78,12 @@ src/
 Toda Server Action sigue esta estructura:
 
 ```typescript
-'use server';
+"use server";
 
-import { z } from 'zod';
-import { requireAuth } from '@/lib/auth/server';
-import { createServerClient } from '@/lib/supabase/server';
-import { revalidatePath } from 'next/cache';
+import { z } from "zod";
+import { requireAuth } from "@/lib/auth/server";
+import { createServerClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 
 const InputSchema = z.object({
   auctionId: z.string().uuid(),
@@ -110,6 +110,7 @@ export async function placeBid(input: unknown) {
 ```
 
 **Reglas:**
+
 - Inputs siempre validados con zod.
 - Errores con mensajes claros (se muestran al usuario).
 - Operaciones críticas en transacciones DB.
@@ -119,11 +120,11 @@ export async function placeBid(input: unknown) {
 
 ## Cliente Supabase: cuándo usar cada uno
 
-| Cliente | Cuándo | Permisos |
-|---------|--------|----------|
-| `createBrowserClient()` | Client Components, suscripciones realtime | RLS aplica |
-| `createServerClient()` | Server Components, Server Actions con sesión de usuario | RLS aplica |
-| `createServiceRoleClient()` | Cron jobs, webhooks, operaciones admin | RLS bypassed (cuidado) |
+| Cliente                     | Cuándo                                                  | Permisos               |
+| --------------------------- | ------------------------------------------------------- | ---------------------- |
+| `createBrowserClient()`     | Client Components, suscripciones realtime               | RLS aplica             |
+| `createServerClient()`      | Server Components, Server Actions con sesión de usuario | RLS aplica             |
+| `createServiceRoleClient()` | Cron jobs, webhooks, operaciones admin                  | RLS bypassed (cuidado) |
 
 **Regla de oro:** usar `serviceRole` solo cuando absolutamente necesario (cron, webhooks). En el resto, dejar que RLS proteja.
 
@@ -136,21 +137,23 @@ export async function placeBid(input: unknown) {
 
 export async function getSession() {
   const supabase = createServerClient();
-  const { data: { session } } = await supabase.auth.getSession();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   return session;
 }
 
 export async function requireAuth() {
   const session = await getSession();
-  if (!session) redirect('/login');
+  if (!session) redirect("/login");
   return session.user;
 }
 
 export async function requireAdmin() {
   const user = await requireAuth();
   const supabase = createServerClient();
-  const { data } = await supabase.from('profiles').select('is_admin').eq('id', user.id).single();
-  if (!data?.is_admin) throw new Error('Admin access required');
+  const { data } = await supabase.from("profiles").select("is_admin").eq("id", user.id).single();
+  if (!data?.is_admin) throw new Error("Admin access required");
   return user;
 }
 ```
@@ -175,9 +178,9 @@ export async function requireAdmin() {
 ```typescript
 // src/lib/auth/cron.ts
 export function assertCronAuth(req: Request) {
-  const authHeader = req.headers.get('authorization');
+  const authHeader = req.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    throw new Response('Unauthorized', { status: 401 });
+    throw new Response("Unauthorized", { status: 401 });
   }
 }
 ```
@@ -187,6 +190,7 @@ Vercel envía `Authorization: Bearer ${CRON_SECRET}` automáticamente si está e
 ### Idempotencia
 
 Cada cron debe ser idempotente (ejecutar 2 veces = ejecutar 1 vez):
+
 - Usar status checks: `WHERE status = 'active'` antes de actuar.
 - Usar `idempotencyKey` en llamadas Stripe.
 - Logear `event_id` procesado en webhooks.
@@ -199,11 +203,11 @@ Todos los inputs externos pasan por zod. Schemas compartidos en `src/lib/validat
 
 ```typescript
 // src/lib/validation/bids.ts
-import { z } from 'zod';
+import { z } from "zod";
 
 export const PlaceBidSchema = z.object({
   auctionId: z.string().uuid(),
-  amount: z.number().int().min(50, 'Mínimo 0.50€'),
+  amount: z.number().int().min(50, "Mínimo 0.50€"),
 });
 
 export type PlaceBidInput = z.infer<typeof PlaceBidSchema>;
@@ -218,7 +222,10 @@ export type PlaceBidInput = z.infer<typeof PlaceBidSchema>;
 ```typescript
 // src/lib/errors.ts
 export class BusinessError extends Error {
-  constructor(public code: string, message: string) {
+  constructor(
+    public code: string,
+    message: string,
+  ) {
     super(message);
   }
 }
@@ -237,10 +244,10 @@ try {
     return { error: { code: e.code, message: e.message } };
   }
   if (e instanceof z.ZodError) {
-    return { error: { code: 'VALIDATION', message: e.errors[0].message } };
+    return { error: { code: "VALIDATION", message: e.errors[0].message } };
   }
-  console.error('Unexpected error:', e);
-  return { error: { code: 'UNKNOWN', message: 'Algo salió mal' } };
+  console.error("Unexpected error:", e);
+  return { error: { code: "UNKNOWN", message: "Algo salió mal" } };
 }
 ```
 
@@ -260,6 +267,7 @@ supabase db push
 ```
 
 **Convenciones:**
+
 - Nombres descriptivos: `0001_initial_schema.sql`, `0002_add_moderation.sql`.
 - Migrations idempotentes donde sea posible (`CREATE TABLE IF NOT EXISTS`).
 - RLS policies en la misma migration que la tabla.
@@ -298,10 +306,12 @@ SYSTEM_USER_ID=                             # UUID del usuario "sistema"
 ## Logging y observabilidad
 
 ### MVP
+
 - `console.log` / `console.error` con prefijos: `[auctions]`, `[bids]`, etc.
 - Errores en webhooks loggeados con `event.id` para correlación.
 
 ### Producción (futuro)
+
 - **Sentry** para errores.
 - **Logtail** o **Axiom** para logs estructurados.
 - **Vercel Analytics** ya viene con la plataforma.
@@ -311,11 +321,13 @@ SYSTEM_USER_ID=                             # UUID del usuario "sistema"
 ## Testing backend
 
 ### MVP: tests críticos manualmente
+
 - Flujo de puja end-to-end (con Stripe test mode).
 - Cierre de subasta (forzar `ends_at` en pasado).
 - Refund anual (forzar `expires_at` en pasado).
 
 ### Post-MVP
+
 - **Vitest** para unit tests de validadores y utilidades.
 - **Tests de integración** contra Supabase local (`supabase start`).
 - **Mock Stripe** con `stripe-mock` para tests deterministas.

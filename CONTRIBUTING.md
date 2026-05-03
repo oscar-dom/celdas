@@ -2,6 +2,8 @@
 
 Bienvenida/o al proyecto **Celdas**. Esta guía explica cómo trabajar en el repositorio.
 
+> **¿Buscas comandos del día a día?** Ve directo a [`docs/git-cheatsheet.md`](docs/git-cheatsheet.md) — es una referencia rápida con ejemplos prácticos. Este `CONTRIBUTING.md` cubre el "por qué" y las normas; la cheatsheet cubre el "cómo".
+
 ---
 
 ## Estrategia de ramas (Git Flow ligero)
@@ -18,6 +20,7 @@ docs/<descripcion>   ← cambios en documentación
 ```
 
 ### Reglas
+
 - **Nunca** se hace push directo a `main` o `develop`. Siempre vía Pull Request.
 - Cada cambio se desarrolla en su propia rama, partiendo de `develop`.
 - Los PRs se mergean a `develop`. Cuando hay un conjunto estable, se hace PR `develop → main` para release.
@@ -85,16 +88,16 @@ Usamos [Conventional Commits](https://www.conventionalcommits.org/).
 
 ### Tipos
 
-| Tipo | Cuándo usar | Ejemplo |
-|------|-------------|---------|
-| `feat` | Nueva funcionalidad para el usuario | `feat: añade login con Google` |
-| `fix` | Corrección de bug | `fix: corrige cierre de subasta sin pujas` |
-| `chore` | Mantenimiento, deps, build, configs | `chore: actualiza Next.js a 15.1` |
-| `docs` | Solo cambios en documentación | `docs: documenta flujo de Stripe Connect` |
-| `refactor` | Refactor sin cambio de comportamiento | `refactor: simplifica cálculo de fees` |
-| `test` | Añadir o modificar tests | `test: añade tests para anti-sniping` |
-| `style` | Formato, espacios (no afecta lógica) | `style: formatea con prettier` |
-| `perf` | Mejora de rendimiento | `perf: cachea queries de celdas` |
+| Tipo       | Cuándo usar                           | Ejemplo                                    |
+| ---------- | ------------------------------------- | ------------------------------------------ |
+| `feat`     | Nueva funcionalidad para el usuario   | `feat: añade login con Google`             |
+| `fix`      | Corrección de bug                     | `fix: corrige cierre de subasta sin pujas` |
+| `chore`    | Mantenimiento, deps, build, configs   | `chore: actualiza Next.js a 15.1`          |
+| `docs`     | Solo cambios en documentación         | `docs: documenta flujo de Stripe Connect`  |
+| `refactor` | Refactor sin cambio de comportamiento | `refactor: simplifica cálculo de fees`     |
+| `test`     | Añadir o modificar tests              | `test: añade tests para anti-sniping`      |
+| `style`    | Formato, espacios (no afecta lógica)  | `style: formatea con prettier`             |
+| `perf`     | Mejora de rendimiento                 | `perf: cachea queries de celdas`           |
 
 ### Reglas
 
@@ -145,6 +148,7 @@ echo "pnpm exec commitlint --edit \$1" > .husky/commit-msg
 ### Editor
 
 Recomendado: VS Code con extensiones:
+
 - ESLint
 - Prettier
 - Tailwind CSS IntelliSense

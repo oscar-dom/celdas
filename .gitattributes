@@ -1,0 +1,19 @@
+# Force LF line endings for all text files in the repo,
+# regardless of each developer's local git config (core.autocrlf).
+# This avoids cross-platform format:check / Prettier mismatches.
+
+* text=auto eol=lf
+
+# Explicitly mark binary types so Git never tries to normalize them
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary

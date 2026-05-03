@@ -1,0 +1,12 @@
+-- =====================================================================
+-- Seed data for Celdas — local development only
+-- =====================================================================
+-- This file runs on `supabase db reset` to populate the local database
+-- with development data (e.g. fake users, sample auctions).
+--
+-- Infrastructure data (the 9 fixed cells) lives in a migration so it
+-- exists in every environment. See:
+--   supabase/migrations/20260503104957_seed_initial_cells.sql
+--
+-- Add development-only fixtures here as the project grows.
+-- =====================================================================
