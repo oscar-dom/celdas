@@ -84,8 +84,8 @@
 - [x] `supabase login` + `supabase link --project-ref jurarifycdnkidnqyrbi` (autenticado)
 - [x] `supabase db push` aplicado al remoto (ambas migrations en sync)
 - [x] Tipos TypeScript generados desde el schema real (`src/lib/supabase/database.types.ts`)
-- [ ] Crear `.env.local` con credenciales reales (acción del usuario)
-- [ ] Validar conexión end-to-end con `pnpm dev` (server fetch a `cells`)
+- [x] Crear `.env.local` con credenciales reales
+- [x] Validar conexión end-to-end con `pnpm dev` (`/api/health/db` devuelve las 9 celdas en HTTP 200)
 
 ### Vercel
 
