@@ -45,6 +45,7 @@ refactor/xxx
 ```
 
 **Reglas técnicas (impuestas por GitHub rulesets):**
+
 - ❌ Push directo a `main` o `develop` está bloqueado.
 - ❌ Force push bloqueado.
 - ❌ Borrado de ramas bloqueado.
@@ -81,19 +82,19 @@ refactor/xxx
 
 ### Tipos válidos
 
-| Tipo       | Cuándo usarlo                                   | Ejemplo                                             |
-|------------|--------------------------------------------------|-----------------------------------------------------|
-| `feat`     | Funcionalidad nueva visible al usuario           | `feat: añade login con Google`                      |
-| `fix`      | Corrección de bug                                | `fix: corrige cierre de subasta sin pujas`          |
-| `chore`    | Mantenimiento, deps, config, scripts             | `chore: actualiza Next.js a 15.1`                   |
-| `docs`     | Solo documentación                               | `docs: documenta flujo de Stripe Connect`           |
-| `refactor` | Refactor sin cambio de comportamiento            | `refactor: simplifica cálculo de fees`              |
-| `test`     | Añadir o modificar tests                         | `test: añade tests para anti-sniping`               |
-| `style`    | Formato, espacios, no afecta lógica              | `style: formatea con prettier`                      |
-| `perf`     | Mejora de rendimiento                            | `perf: cachea queries de celdas`                    |
-| `build`    | Cambios al sistema de build, deps de build       | `build: añade webpack analyzer`                     |
-| `ci`       | Cambios en CI/CD                                 | `ci: añade test job a GitHub Actions`               |
-| `revert`   | Revertir commit anterior                         | `revert: deshace "feat: añade X"`                   |
+| Tipo       | Cuándo usarlo                              | Ejemplo                                    |
+| ---------- | ------------------------------------------ | ------------------------------------------ |
+| `feat`     | Funcionalidad nueva visible al usuario     | `feat: añade login con Google`             |
+| `fix`      | Corrección de bug                          | `fix: corrige cierre de subasta sin pujas` |
+| `chore`    | Mantenimiento, deps, config, scripts       | `chore: actualiza Next.js a 15.1`          |
+| `docs`     | Solo documentación                         | `docs: documenta flujo de Stripe Connect`  |
+| `refactor` | Refactor sin cambio de comportamiento      | `refactor: simplifica cálculo de fees`     |
+| `test`     | Añadir o modificar tests                   | `test: añade tests para anti-sniping`      |
+| `style`    | Formato, espacios, no afecta lógica        | `style: formatea con prettier`             |
+| `perf`     | Mejora de rendimiento                      | `perf: cachea queries de celdas`           |
+| `build`    | Cambios al sistema de build, deps de build | `build: añade webpack analyzer`            |
+| `ci`       | Cambios en CI/CD                           | `ci: añade test job a GitHub Actions`      |
+| `revert`   | Revertir commit anterior                   | `revert: deshace "feat: añade X"`          |
 
 ### Reglas
 
@@ -105,13 +106,13 @@ refactor/xxx
 
 ### Ejemplos buenos vs malos
 
-| ❌ Mal                              | ✅ Bien                                           |
-|-------------------------------------|---------------------------------------------------|
-| `actualizado el login`              | `feat: añade validación de email en login`        |
-| `arreglos varios`                   | `fix: corrige error 500 al pujar sin sesión`      |
-| `WIP`                               | `feat: añade primer borrador del grid de celdas`  |
-| `Fix.`                              | `fix: corrige cálculo de comisión 5%`             |
-| `feat: Add user system.`            | `feat: añade sistema de usuarios`                 |
+| ❌ Mal                   | ✅ Bien                                          |
+| ------------------------ | ------------------------------------------------ |
+| `actualizado el login`   | `feat: añade validación de email en login`       |
+| `arreglos varios`        | `fix: corrige error 500 al pujar sin sesión`     |
+| `WIP`                    | `feat: añade primer borrador del grid de celdas` |
+| `Fix.`                   | `fix: corrige cálculo de comisión 5%`            |
+| `feat: Add user system.` | `feat: añade sistema de usuarios`                |
 
 ### Commit con cuerpo (cuando hace falta más contexto)
 
@@ -151,6 +152,7 @@ git checkout -b feat/sistema-pujas
 ```
 
 **Naming de ramas:**
+
 - Empieza con `feat/`, `fix/`, `chore/`, `docs/`, etc.
 - Descripción corta en kebab-case: `feat/login-google`, no `feat/Login_Con_Google`.
 - Verbos en infinitivo o sustantivos: `feat/anadir-realtime`, `fix/cierre-subasta`.

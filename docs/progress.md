@@ -16,6 +16,7 @@
 ## Completado
 
 ### Inicialización (2026-05-01)
+
 - ✅ Repositorio Git local creado en `Desktop/GitHub/Celdas`
 - ✅ `CLAUDE.md` inicial creado
 - ✅ `README.md` y `.gitignore` base
@@ -23,6 +24,7 @@
 - ✅ Plan completo validado con el usuario
 
 ### Documentación (2026-05-02)
+
 - ✅ `CLAUDE.md` actualizado con visión, stack y referencias
 - ✅ `docs/architecture.md` — arquitectura técnica completa
 - ✅ `docs/database-schema.md` — schema PostgreSQL + RLS
@@ -34,6 +36,7 @@
 - ✅ `docs/progress.md` — este archivo
 
 ### Git Flow setup (2026-05-02)
+
 - ✅ GitHub CLI (`gh`) instalado y autenticado como `oscar-dom`
 - ✅ Rama `develop` creada y pusheada
 - ✅ `.github/PULL_REQUEST_TEMPLATE.md` — plantilla de PRs
@@ -48,22 +51,26 @@
 - ✅ Dependabot vulnerability alerts + automated security fixes activados
 - ✅ Skill `setup-git-flow` creado en `~/.claude/skills/` para replicar en futuros proyectos
 - ✅ `docs/git-cheatsheet.md` — referencia rápida de Git/PRs/commits para humanos e IAs (también incluida en el skill)
-- ⏳ commitlint + husky local (cuando exista `package.json` tras setup Next.js)
 
----
+### Setup del proyecto (2026-05-02)
 
-## Próximos pasos inmediatos (Fase 0)
-
-### Setup del proyecto
-- [ ] Crear repositorio en GitHub y conectar el local
-- [ ] Inicializar Next.js 15 con TypeScript en `Desktop/GitHub/Celdas`
-  - Comando: `pnpm dlx create-next-app@latest . --typescript --tailwind --app --no-src-dir=false`
-- [ ] Configurar Tailwind CSS y shadcn/ui (`pnpm dlx shadcn@latest init`)
-- [ ] Instalar componentes shadcn iniciales: button, input, card, dialog, form, toast
-- [ ] Configurar ESLint + Prettier
-- [ ] Setup de paths absolutos en `tsconfig.json` (`@/`)
+- ✅ Node.js 24 + pnpm 10 instalados (npm install -g pnpm tras `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser`)
+- ✅ Next.js **16.2.4** inicializado con TypeScript, Tailwind v4, ESLint, App Router, src/, alias `@/*`
+  - Nota: `create-next-app@latest` ya instala Next.js 16 (no 15). Compatible con todas nuestras decisiones.
+  - Next.js 16 genera `AGENTS.md` con avisos de breaking changes para agentes IA. Se importa desde `CLAUDE.md` con `@AGENTS.md`.
+- ✅ Prettier configurado: `.prettierrc.json` + `.prettierignore` + `prettier-plugin-tailwindcss` + `eslint-config-prettier/flat`
+- ✅ husky 9 + commitlint instalados:
+  - `prepare: husky` en package.json para auto-instalar hooks tras `pnpm install`
+  - pre-commit: `pnpm format:check && pnpm lint`
+  - commit-msg: `pnpm exec commitlint --edit "$1"` con `commitlint.config.cjs` extendiendo `@commitlint/config-conventional`
+- ✅ CI actualizado: Node 22 LTS, pnpm 10, paso `format:check` añadido, `continue-on-error` removido del job de commitlint
+- ✅ shadcn/ui v4 inicializado con style `base-nova` y `neutral` base color
+  - Componentes añadidos: button, card, dialog, input, label, sonner
+  - Pendiente: `form` (no portado a base-nova todavía, lo añadiremos en Fase 1 desde `new-york` o registry custom)
+- ✅ Scripts en package.json: dev, build, start, lint, lint:fix, typecheck, format, format:check, prepare
 
 ### Supabase
+
 - [ ] Crear cuenta y proyecto en supabase.com
 - [ ] Instalar Supabase CLI localmente
 - [ ] `supabase init` en el proyecto
@@ -73,12 +80,14 @@
 - [ ] Generar tipos TypeScript: `supabase gen types`
 
 ### Vercel
+
 - [ ] Crear cuenta Vercel
 - [ ] Conectar repositorio GitHub
 - [ ] Configurar variables de entorno en Vercel dashboard
 - [ ] Deploy inicial
 
 ### Stripe
+
 - [ ] Crear cuenta Stripe (modo test)
 - [ ] Activar Stripe Connect Express
 - [ ] Configurar webhook endpoint local (Stripe CLI: `stripe listen`)
@@ -129,18 +138,21 @@
 
 ## Decisiones tomadas
 
-| Fecha | Decisión | Motivo |
-|-------|----------|--------|
-| 2026-05-01 | Stack: Next.js 15 + TypeScript + Supabase + Vercel | Simple, gratis, bien documentado |
-| 2026-05-01 | Pagos: Stripe + PayPal | Stripe principal por Connect; PayPal opcional |
-| 2026-05-01 | Realtime con WebSockets (Supabase Realtime) | Mejor UX en pujas |
-| 2026-05-01 | Anti-sniping: extender 2 min si puja en últimos 2 min | Estándar industria, justo |
-| 2026-05-01 | Subasta sin pujas → celda vuelve a `locked` | Simple, sin penalizaciones |
-| 2026-05-01 | Duración subastas: admin libre, owner 1h-72h | Balance flexibilidad/control |
-| 2026-05-02 | Documentación distribuida en `docs/` (no todo en CLAUDE.md) | Eficiencia de tokens en Claude |
-| 2026-05-02 | Git Flow ligero: `main` + `develop` + `feat/fix/chore` | Profesional, escalable, separa producción de integración |
-| 2026-05-02 | Conventional Commits con linter automático | Historial legible, posibilidad de changelogs auto |
-| 2026-05-02 | GitHub Actions CI desde el inicio | Red de seguridad: bloquea merges con código roto |
+| Fecha      | Decisión                                                    | Motivo                                                                 |
+| ---------- | ----------------------------------------------------------- | ---------------------------------------------------------------------- |
+| 2026-05-01 | Stack: Next.js 15 + TypeScript + Supabase + Vercel          | Simple, gratis, bien documentado                                       |
+| 2026-05-01 | Pagos: Stripe + PayPal                                      | Stripe principal por Connect; PayPal opcional                          |
+| 2026-05-01 | Realtime con WebSockets (Supabase Realtime)                 | Mejor UX en pujas                                                      |
+| 2026-05-01 | Anti-sniping: extender 2 min si puja en últimos 2 min       | Estándar industria, justo                                              |
+| 2026-05-01 | Subasta sin pujas → celda vuelve a `locked`                 | Simple, sin penalizaciones                                             |
+| 2026-05-01 | Duración subastas: admin libre, owner 1h-72h                | Balance flexibilidad/control                                           |
+| 2026-05-02 | Documentación distribuida en `docs/` (no todo en CLAUDE.md) | Eficiencia de tokens en Claude                                         |
+| 2026-05-02 | Git Flow ligero: `main` + `develop` + `feat/fix/chore`      | Profesional, escalable, separa producción de integración               |
+| 2026-05-02 | Conventional Commits con linter automático                  | Historial legible, posibilidad de changelogs auto                      |
+| 2026-05-02 | GitHub Actions CI desde el inicio                           | Red de seguridad: bloquea merges con código roto                       |
+| 2026-05-02 | Next.js **16** (en lugar de 15)                             | `create-next-app@latest` instala 16; sin breaking para nosotros        |
+| 2026-05-02 | shadcn/ui v4 con style `base-nova`                          | Default actual del CLI; usa `@base-ui/react` (Base UI) en vez de Radix |
+| 2026-05-02 | Pre-commit `format:check + lint` (sin typecheck ni build)   | typecheck y build son lentos; CI los cubre. Commit debe ser rápido     |
 
 ---
 
@@ -157,7 +169,7 @@
 
 ## Bloqueos / Riesgos
 
-- *(Ninguno actualmente)*
+- _(Ninguno actualmente)_
 
 ---
 

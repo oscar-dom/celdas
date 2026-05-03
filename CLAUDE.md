@@ -1,6 +1,10 @@
+@AGENTS.md
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+> **Nota:** la línea `@AGENTS.md` de arriba importa automáticamente las reglas para agentes de IA generadas por Next.js 16 (avisos sobre breaking changes respecto a versiones anteriores). No la elimines.
 
 > **Documentación distribuida:** Este archivo es el punto de entrada y contiene la visión general. Los detalles técnicos están en `docs/` y se cargan bajo demanda para optimizar uso de tokens.
 
@@ -11,6 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Celdas** es una webapp de subastas donde los usuarios compran "celdas" (9 inicialmente). Cada celda permite mostrar contenido personalizado (imagen → futuro: video/gif) y guarda un historial completo de propietarios.
 
 ### Modelo de negocio
+
 - Las celdas se adquieren mediante **subastas** con tiempo limitado.
 - El propietario tiene la celda durante **1 año**, tras el cual vuelve a subasta y se le reembolsa el **50%** del precio original.
 - El propietario puede **vender antes** mediante subasta (1h-72h) o precio fijo.
@@ -18,6 +23,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Las imágenes/contenido pasan por una **cola de moderación** antes de mostrarse.
 
 ### Estado del proyecto
+
 **Fase actual:** Fase 0 - Setup base (proyecto recién inicializado)
 
 Ver `docs/progress.md` para el estado detallado y próximos pasos.
@@ -26,16 +32,16 @@ Ver `docs/progress.md` para el estado detallado y próximos pasos.
 
 ## Stack Tecnológico
 
-| Capa | Tecnología | Notas |
-|------|-----------|-------|
-| Framework | Next.js 15 (App Router) | Full-stack en una codebase |
-| Lenguaje | TypeScript | Type-safety crítica con dinero real |
-| UI | Tailwind CSS + shadcn/ui | Diseño rápido con buenos defaults |
-| DB / Auth / Storage | Supabase (PostgreSQL) | Auth + Realtime + Storage incluidos |
-| Realtime (pujas) | Supabase Realtime | WebSockets gestionados |
-| Pagos | Stripe Connect + PayPal | Stripe principal, PayPal alternativo |
-| Hosting | Vercel | Deploy automático desde Git |
-| Cron jobs | Vercel Cron | Cierre subastas + refunds anuales |
+| Capa                | Tecnología               | Notas                                |
+| ------------------- | ------------------------ | ------------------------------------ |
+| Framework           | Next.js 16 (App Router)  | Full-stack en una codebase           |
+| Lenguaje            | TypeScript               | Type-safety crítica con dinero real  |
+| UI                  | Tailwind CSS + shadcn/ui | Diseño rápido con buenos defaults    |
+| DB / Auth / Storage | Supabase (PostgreSQL)    | Auth + Realtime + Storage incluidos  |
+| Realtime (pujas)    | Supabase Realtime        | WebSockets gestionados               |
+| Pagos               | Stripe Connect + PayPal  | Stripe principal, PayPal alternativo |
+| Hosting             | Vercel                   | Deploy automático desde Git          |
+| Cron jobs           | Vercel Cron              | Cierre subastas + refunds anuales    |
 
 **Costo MVP estimado:** $0/mes (free tiers).
 
@@ -74,29 +80,34 @@ Celdas/
 
 Según en qué estés trabajando, lee solo los docs relevantes:
 
-| Si trabajas en... | Lee primero... |
-|------------------|----------------|
-| Git, commits, PRs, branching | `docs/git-cheatsheet.md` |
-| Diseño general / arquitectura | `docs/architecture.md` |
-| Base de datos / queries | `docs/database-schema.md` |
-| Lógica de subastas | `docs/auction-flow.md` + `docs/business-rules.md` |
-| Lógica de pagos | `docs/payment-flow.md` + `docs/business-rules.md` |
-| Componentes UI / páginas | `docs/frontend.md` |
-| API / Server actions / Cron | `docs/backend.md` |
-| Saber qué falta hacer | `docs/progress.md` |
+| Si trabajas en...             | Lee primero...                                    |
+| ----------------------------- | ------------------------------------------------- |
+| Git, commits, PRs, branching  | `docs/git-cheatsheet.md`                          |
+| Diseño general / arquitectura | `docs/architecture.md`                            |
+| Base de datos / queries       | `docs/database-schema.md`                         |
+| Lógica de subastas            | `docs/auction-flow.md` + `docs/business-rules.md` |
+| Lógica de pagos               | `docs/payment-flow.md` + `docs/business-rules.md` |
+| Componentes UI / páginas      | `docs/frontend.md`                                |
+| API / Server actions / Cron   | `docs/backend.md`                                 |
+| Saber qué falta hacer         | `docs/progress.md`                                |
 
 ---
 
 ## Comandos comunes
 
-*A documentar cuando esté el setup hecho. Por ahora:*
-
 ```bash
-# Inicializar proyecto (pendiente)
-# pnpm install
-# pnpm dev
-# pnpm build
+pnpm install         # Instalar dependencias (también instala hooks de husky)
+pnpm dev             # Servidor de desarrollo (Turbopack)
+pnpm build           # Build de producción
+pnpm start           # Servir build de producción
+pnpm lint            # ESLint
+pnpm lint:fix        # ESLint con auto-fix
+pnpm typecheck       # tsc --noEmit
+pnpm format          # Prettier --write .
+pnpm format:check    # Prettier --check . (lo que ejecuta el CI)
 ```
+
+> **Nota pnpm 10:** hay un bug que rompe `pnpm add` con un workspace.yaml de un solo paquete. Workaround: usar `pnpm add --ignore-workspace <paquete>` para añadir nuevas dependencias.
 
 ---
 
@@ -105,7 +116,7 @@ Según en qué estés trabajando, lee solo los docs relevantes:
 - **Idioma del código:** Inglés (variables, funciones, comentarios técnicos).
 - **Idioma de la UI:** Español (audiencia hispanohablante).
 - **Commits:** [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `chore:`, etc.). Sin atribuciones de IA.
-- **Estilo:** TypeScript estricto, ESLint + Prettier (a configurar en setup).
+- **Estilo:** TypeScript estricto, ESLint + Prettier (configurado, validado por husky pre-commit).
 
 ### Git Flow
 
@@ -135,4 +146,4 @@ docs/<x>  ← solo documentación
 
 ## Última actualización
 
-**2026-05-01:** Plan validado, estructura de docs creada, listos para iniciar Fase 0.
+**2026-05-02:** Fase 0 completada — Next.js 16 + Tailwind 4 + ESLint + Prettier + husky/commitlint + shadcn/ui (base-nova) inicializados. Pendiente: cuentas externas (Supabase, Vercel, Stripe).

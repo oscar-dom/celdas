@@ -1,6 +1,6 @@
 # Celdas
 
-*Project description and documentation to be added.*
+_Project description and documentation to be added._
 
 ## Getting Started
 

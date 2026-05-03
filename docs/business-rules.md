@@ -26,6 +26,7 @@
 ```
 
 **Estado `for_sale`** puede subdividirse en:
+
 - Subasta abierta por dueño (1h-72h) → registro en `auctions` con `opened_by = 'owner'`.
 - Precio fijo → registro en `fixed_price_listings`.
 
@@ -35,10 +36,10 @@
 
 ### Apertura
 
-| Quién abre | Duración | Precio inicial |
-|-----------|----------|----------------|
+| Quién abre             | Duración               | Precio inicial  |
+| ---------------------- | ---------------------- | --------------- |
 | Admin (celda `locked`) | Libre, define el admin | Define el admin |
-| Owner (celda `owned`) | Mínimo 1h, máximo 72h | Define el owner |
+| Owner (celda `owned`)  | Mínimo 1h, máximo 72h  | Define el owner |
 
 ### Reglas de pujas
 
@@ -47,7 +48,7 @@
    - 10€ - 100€ → +1€
    - 100€ - 1000€ → +5€
    - \> 1000€ → +10€
-   *(Configurable en `lib/auctions/min-increment.ts`)*
+     _(Configurable en `lib/auctions/min-increment.ts`)_
 
 2. **Validaciones al pujar:**
    - Usuario autenticado.
@@ -64,6 +65,7 @@
 ### Cierre
 
 Cron job ejecuta cada minuto:
+
 1. Selecciona auctions con `ends_at <= NOW() AND status = 'active'`.
 2. Para cada una:
    - **Si hay pujas:**
@@ -85,21 +87,27 @@ Cron job ejecuta cada minuto:
 ## Propiedad de celda
 
 ### Duración: 1 año
+
 - `expires_at = acquired_at + INTERVAL '1 year'`.
 
 ### Personalización
+
 - El dueño puede subir/cambiar imagen y mensaje en cualquier momento.
 - Cualquier cambio entra en `moderation_queue` con status `pending`.
 - El contenido **público** sigue siendo el último aprobado hasta que el nuevo se apruebe.
 - Si se rechaza, el dueño recibe el motivo (`review_notes`) y debe enviar otro.
 
 ### Venta voluntaria
+
 El dueño puede vender en cualquier momento durante el año:
+
 - **Subasta:** abre auction con duración 1h-72h, define `starting_price`.
 - **Precio fijo:** crea `fixed_price_listing` con `price`. Cualquier usuario autenticado puede comprar.
 
 ### Expiración (anual)
+
 Cron job diario:
+
 1. Selecciona cells con `expires_at <= NOW() AND status = 'owned'`.
 2. Para cada una:
    - Reembolsa **50%** de `current_acquisition_price` al `current_owner_id` (via mismo provider del pago original).
@@ -115,17 +123,21 @@ Cron job diario:
 ## Comisiones
 
 ### Sistema cobra 5% en cada transacción exitosa
+
 Aplica a:
+
 - Compra inicial vía subasta (admin-opened): el sistema retiene 5%, 95% se queda como ingreso del sistema (no hay vendedor).
 - Reventa por subasta (owner-opened): 5% para sistema, 95% para owner.
 - Reventa a precio fijo: 5% para sistema, 95% para owner.
 
 ### Reembolso anual del 50%
+
 - Aplica solo a celdas que **expiran** sin haber sido vendidas durante el año.
 - No aplica si el dueño vendió antes del año (en ese caso ya recibió el 95% de la venta).
 - El 50% sale del fondo del sistema (que acumuló comisiones + ingresos previos).
 
 ### Implicación financiera
+
 El sistema necesita mantener reservas para cubrir reembolsos. **Importante:** modelar esto en producción para no quedarse sin liquidez. En MVP no es crítico (volumen bajo).
 
 ---
@@ -133,12 +145,14 @@ El sistema necesita mantener reservas para cubrir reembolsos. **Importante:** mo
 ## Moderación de contenido
 
 ### Flujo
+
 1. Usuario sube imagen/mensaje → entra en `moderation_queue` con `status = 'pending'`.
 2. Admin revisa en panel `/admin/moderation`.
 3. Admin aprueba → `status = 'approved'`, se actualiza `cells.current_image_url` y `cells.owner_message`.
 4. Admin rechaza → `status = 'rejected'`, escribe `review_notes`. El dueño es notificado (futuro: email).
 
 ### Normativa básica (a refinar con T&C legal)
+
 - Sin contenido sexual explícito.
 - Sin violencia gráfica.
 - Sin contenido ilegal o que incite al odio.
@@ -146,6 +160,7 @@ El sistema necesita mantener reservas para cubrir reembolsos. **Importante:** mo
 - Sin información personal de terceros.
 
 ### Futuro: pre-filtro automático
+
 - AWS Rekognition / OpenAI Moderation API filtra obvios.
 - Solo casos límite van a moderación humana.
 
@@ -153,15 +168,15 @@ El sistema necesita mantener reservas para cubrir reembolsos. **Importante:** mo
 
 ## Casos extremos
 
-| Caso | Comportamiento |
-|------|----------------|
-| Usuario gana subasta pero su tarjeta falla al capturar | Cancelar venta, ofrecer al segundo mayor pujador (futuro) o reabrir |
-| Dos pujas iguales en el mismo milisegundo | La que se inserta primera gana (DB serializa) |
-| Owner abre subasta y luego quiere cancelar antes del fin | Permitido si no hay pujas; bloqueado si hay pujas |
-| Admin marca imagen como rechazada después de aprobada | Permitido; vuelve a estado pendiente, dueño debe resubir |
-| Sistema sin liquidez para refund anual | Bloquear renovación, alertar admin (futuro: alarma) |
-| Usuario borra cuenta con celda activa | La celda vuelve a `locked`, no hay refund (cancelación voluntaria) |
-| Subasta sigue extendiéndose por anti-sniping indefinidamente | OK por diseño; los participantes deciden cuándo parar |
+| Caso                                                         | Comportamiento                                                      |
+| ------------------------------------------------------------ | ------------------------------------------------------------------- |
+| Usuario gana subasta pero su tarjeta falla al capturar       | Cancelar venta, ofrecer al segundo mayor pujador (futuro) o reabrir |
+| Dos pujas iguales en el mismo milisegundo                    | La que se inserta primera gana (DB serializa)                       |
+| Owner abre subasta y luego quiere cancelar antes del fin     | Permitido si no hay pujas; bloqueado si hay pujas                   |
+| Admin marca imagen como rechazada después de aprobada        | Permitido; vuelve a estado pendiente, dueño debe resubir            |
+| Sistema sin liquidez para refund anual                       | Bloquear renovación, alertar admin (futuro: alarma)                 |
+| Usuario borra cuenta con celda activa                        | La celda vuelve a `locked`, no hay refund (cancelación voluntaria)  |
+| Subasta sigue extendiéndose por anti-sniping indefinidamente | OK por diseño; los participantes deciden cuándo parar               |
 
 ---
 
@@ -171,13 +186,13 @@ Se definen en `src/lib/auctions/config.ts`:
 
 ```typescript
 export const AUCTION_CONFIG = {
-  ANTI_SNIPING_WINDOW_MS: 2 * 60 * 1000,      // 2 minutos
-  ANTI_SNIPING_EXTENSION_MS: 2 * 60 * 1000,   // extender 2 minutos
+  ANTI_SNIPING_WINDOW_MS: 2 * 60 * 1000, // 2 minutos
+  ANTI_SNIPING_EXTENSION_MS: 2 * 60 * 1000, // extender 2 minutos
   OWNER_AUCTION_MIN_HOURS: 1,
   OWNER_AUCTION_MAX_HOURS: 72,
-  ADMIN_AUCTION_DEFAULT_DAYS: 7,               // tras expiración anual
-  SYSTEM_FEE_PERCENT: 5,                        // 5%
-  ANNUAL_REFUND_PERCENT: 50,                    // 50%
+  ADMIN_AUCTION_DEFAULT_DAYS: 7, // tras expiración anual
+  SYSTEM_FEE_PERCENT: 5, // 5%
+  ANNUAL_REFUND_PERCENT: 50, // 50%
   OWNERSHIP_DURATION_DAYS: 365,
 };
 ```

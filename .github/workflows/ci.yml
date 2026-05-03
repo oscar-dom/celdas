@@ -24,22 +24,26 @@ jobs:
             echo "::notice::No package.json yet, skipping JS/TS checks."
           fi
 
+      - name: Setup pnpm
+        if: steps.check-pkg.outputs.has_pkg == 'true'
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Setup Node.js
         if: steps.check-pkg.outputs.has_pkg == 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
-
-      - name: Setup pnpm
-        if: steps.check-pkg.outputs.has_pkg == 'true'
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9
+          node-version: "22"
+          cache: "pnpm"
 
       - name: Install dependencies
         if: steps.check-pkg.outputs.has_pkg == 'true'
         run: pnpm install --frozen-lockfile
+
+      - name: Format check
+        if: steps.check-pkg.outputs.has_pkg == 'true'
+        run: pnpm format:check
 
       - name: Lint
         if: steps.check-pkg.outputs.has_pkg == 'true'
@@ -64,4 +68,3 @@ jobs:
 
       - name: Validate Conventional Commits
         uses: wagoid/commitlint-github-action@v6
-        continue-on-error: true

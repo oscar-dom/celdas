@@ -17,6 +17,7 @@
 ## Stripe Connect
 
 Usamos **Stripe Connect** porque permite:
+
 - Cobrar al usuario que puja.
 - Transferir parte al vendedor (si era subasta de owner).
 - Quedarnos con el 5% como `application_fee_amount`.
@@ -48,20 +49,23 @@ STRIPE_CONNECT_CLIENT_ID=ca_...
 export async function createBidHold({ userId, amount, auctionId }) {
   const customer = await getOrCreateStripeCustomer(userId);
 
-  const intent = await stripe.paymentIntents.create({
-    amount,                              // céntimos
-    currency: 'eur',
-    customer: customer.id,
-    capture_method: 'manual',            // ⚠️ clave: no captura inmediato
-    automatic_payment_methods: { enabled: true },
-    metadata: {
-      auction_id: auctionId,
-      user_id: userId,
-      type: 'bid_hold',
+  const intent = await stripe.paymentIntents.create(
+    {
+      amount, // céntimos
+      currency: "eur",
+      customer: customer.id,
+      capture_method: "manual", // ⚠️ clave: no captura inmediato
+      automatic_payment_methods: { enabled: true },
+      metadata: {
+        auction_id: auctionId,
+        user_id: userId,
+        type: "bid_hold",
+      },
     },
-  }, {
-    idempotencyKey: `bid:${auctionId}:${userId}:${amount}`,
-  });
+    {
+      idempotencyKey: `bid:${auctionId}:${userId}:${amount}`,
+    },
+  );
 
   return intent;
 }
@@ -74,7 +78,7 @@ export async function createBidHold({ userId, amount, auctionId }) {
 ```typescript
 export async function releaseBidHold(paymentIntentId: string) {
   await stripe.paymentIntents.cancel(paymentIntentId, {
-    cancellation_reason: 'abandoned',
+    cancellation_reason: "abandoned",
   });
 }
 ```
@@ -82,10 +86,13 @@ export async function releaseBidHold(paymentIntentId: string) {
 ### 3. Capturar al cerrar subasta (cobrar al ganador)
 
 ```typescript
-export async function captureWinningBid(intent: Stripe.PaymentIntent, opts: {
-  systemFee: number;        // céntimos
-  sellerStripeAccount?: string;  // si era subasta de owner
-}) {
+export async function captureWinningBid(
+  intent: Stripe.PaymentIntent,
+  opts: {
+    systemFee: number; // céntimos
+    sellerStripeAccount?: string; // si era subasta de owner
+  },
+) {
   const { systemFee, sellerStripeAccount } = opts;
 
   if (sellerStripeAccount) {
@@ -97,9 +104,13 @@ export async function captureWinningBid(intent: Stripe.PaymentIntent, opts: {
   }
   // En subasta admin (inicial), todo se queda en el sistema → no transfer.
 
-  return await stripe.paymentIntents.capture(intent.id, {}, {
-    idempotencyKey: `capture:${intent.id}`,
-  });
+  return await stripe.paymentIntents.capture(
+    intent.id,
+    {},
+    {
+      idempotencyKey: `capture:${intent.id}`,
+    },
+  );
 }
 ```
 
@@ -109,14 +120,17 @@ export async function captureWinningBid(intent: Stripe.PaymentIntent, opts: {
 export async function refundHalf(paymentIntentId: string, originalAmount: number) {
   const refundAmount = Math.round(originalAmount * 0.5);
 
-  return await stripe.refunds.create({
-    payment_intent: paymentIntentId,
-    amount: refundAmount,
-    reason: 'requested_by_customer',
-    metadata: { type: 'annual_expiry_refund' },
-  }, {
-    idempotencyKey: `refund:expiry:${paymentIntentId}`,
-  });
+  return await stripe.refunds.create(
+    {
+      payment_intent: paymentIntentId,
+      amount: refundAmount,
+      reason: "requested_by_customer",
+      metadata: { type: "annual_expiry_refund" },
+    },
+    {
+      idempotencyKey: `refund:expiry:${paymentIntentId}`,
+    },
+  );
 }
 ```
 
@@ -127,8 +141,8 @@ Cuando un usuario va a vender por primera vez:
 ```typescript
 // Crear cuenta Connect Express
 const account = await stripe.accounts.create({
-  type: 'express',
-  country: 'ES',
+  type: "express",
+  country: "ES",
   email: user.email,
   capabilities: {
     transfers: { requested: true },
@@ -138,9 +152,9 @@ const account = await stripe.accounts.create({
 // Generar onboarding link
 const link = await stripe.accountLinks.create({
   account: account.id,
-  refresh_url: 'https://celdas.app/profile/payouts/refresh',
-  return_url: 'https://celdas.app/profile/payouts/done',
-  type: 'account_onboarding',
+  refresh_url: "https://celdas.app/profile/payouts/refresh",
+  return_url: "https://celdas.app/profile/payouts/done",
+  type: "account_onboarding",
 });
 
 // Guardar account.id en profiles.stripe_account_id
@@ -156,26 +170,26 @@ const link = await stripe.accountLinks.create({
 ```typescript
 export async function POST(req: Request) {
   const body = await req.text();
-  const signature = req.headers.get('stripe-signature');
+  const signature = req.headers.get("stripe-signature");
 
   let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET);
   } catch {
-    return new Response('Invalid signature', { status: 400 });
+    return new Response("Invalid signature", { status: 400 });
   }
 
   switch (event.type) {
-    case 'payment_intent.succeeded':
+    case "payment_intent.succeeded":
       await handleCaptureSuccess(event.data.object);
       break;
-    case 'payment_intent.payment_failed':
+    case "payment_intent.payment_failed":
       await handleCaptureFailed(event.data.object);
       break;
-    case 'charge.refunded':
+    case "charge.refunded":
       await handleRefundCompleted(event.data.object);
       break;
-    case 'account.updated':
+    case "account.updated":
       await syncConnectAccountStatus(event.data.object);
       break;
   }
@@ -185,6 +199,7 @@ export async function POST(req: Request) {
 ```
 
 **Importante:**
+
 - Responder rápido (< 5s) o Stripe reintenta.
 - Idempotencia: chequear `event.id` contra una tabla `webhook_events_processed` antes de actuar.
 
@@ -204,8 +219,8 @@ PayPal es **alternativa secundaria**. Para MVP, podemos lanzar solo Stripe y añ
 ```typescript
 // 1. Crear order con intent='AUTHORIZE'
 const order = await paypal.orders.create({
-  intent: 'AUTHORIZE',
-  purchase_units: [{ amount: { currency_code: 'EUR', value: amount.toFixed(2) } }],
+  intent: "AUTHORIZE",
+  purchase_units: [{ amount: { currency_code: "EUR", value: amount.toFixed(2) } }],
 });
 
 // 2. Usuario aprueba en frontend (PayPal SDK)
@@ -223,19 +238,20 @@ await paypal.authorizations.void(auth.id);
 
 ## Tabla de mapeo: evento → acción
 
-| Evento | Stripe webhook | Acción nuestra |
-|--------|---------------|----------------|
-| Usuario gana subasta | `payment_intent.amount_capturable_updated` (al pre-autorizar) → `payment_intent.succeeded` (tras capture) | Confirmar transferencia de propiedad |
-| Pago falla en captura | `payment_intent.payment_failed` | Marcar transacción failed, notificar admin, considerar reabrir |
-| Refund procesado | `charge.refunded` | Actualizar `transactions.status = 'refunded'` |
-| Vendedor completa onboarding | `account.updated` con `charges_enabled: true` | Permitir vender |
-| Disputa | `charge.dispute.created` | Bloquear cuenta usuario, notificar admin |
+| Evento                       | Stripe webhook                                                                                            | Acción nuestra                                                 |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Usuario gana subasta         | `payment_intent.amount_capturable_updated` (al pre-autorizar) → `payment_intent.succeeded` (tras capture) | Confirmar transferencia de propiedad                           |
+| Pago falla en captura        | `payment_intent.payment_failed`                                                                           | Marcar transacción failed, notificar admin, considerar reabrir |
+| Refund procesado             | `charge.refunded`                                                                                         | Actualizar `transactions.status = 'refunded'`                  |
+| Vendedor completa onboarding | `account.updated` con `charges_enabled: true`                                                             | Permitir vender                                                |
+| Disputa                      | `charge.dispute.created`                                                                                  | Bloquear cuenta usuario, notificar admin                       |
 
 ---
 
 ## Seguridad
 
 ### Validaciones críticas
+
 - ✅ Verificar firma webhook (`stripe.webhooks.constructEvent`).
 - ✅ Verificar que el `payment_intent.metadata.user_id` coincide con el `bid.bidder_id`.
 - ✅ Verificar que el `payment_intent.metadata.auction_id` coincide.
@@ -243,11 +259,13 @@ await paypal.authorizations.void(auth.id);
 - ✅ Idempotencia con `idempotencyKey` en cada llamada Stripe.
 
 ### Variables sensibles
+
 - Nunca exponer `STRIPE_SECRET_KEY` al cliente.
 - Solo `STRIPE_PUBLISHABLE_KEY` en el frontend (Stripe Elements).
 - Service role key de Supabase solo en server.
 
 ### Logs
+
 - No logear datos completos de tarjetas (Stripe ya nunca los expone, pero por si acaso).
 - Sí logear IDs de transacción para debugging.
 
@@ -256,11 +274,13 @@ await paypal.authorizations.void(auth.id);
 ## Testing
 
 ### Stripe Test Mode
+
 - Usar `STRIPE_SECRET_KEY=sk_test_...` en desarrollo.
 - Tarjetas de prueba: `4242 4242 4242 4242` (success), `4000 0000 0000 0002` (decline).
 - Webhook testing: `stripe listen --forward-to localhost:3000/api/webhooks/stripe`.
 
 ### Casos a testear
+
 1. Puja exitosa → pre-autorización en Stripe dashboard visible.
 2. Puja superada → pre-autorización liberada.
 3. Cierre de subasta → captura exitosa, transferencia al owner si aplica, fee del 5% registrado.

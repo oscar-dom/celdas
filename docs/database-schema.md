@@ -17,7 +17,9 @@
 ## Tablas
 
 ### `profiles`
+
 Datos públicos del usuario (la tabla `users` la gestiona Supabase Auth).
+
 ```sql
 CREATE TABLE profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -34,7 +36,9 @@ CREATE TABLE profiles (
 ```
 
 ### `cells`
+
 Las 9 celdas (entidades fijas del sistema).
+
 ```sql
 CREATE TYPE cell_status AS ENUM ('locked', 'in_auction', 'owned', 'for_sale');
 
@@ -52,7 +56,9 @@ CREATE TABLE cells (
 ```
 
 ### `auctions`
+
 Subastas (activas e históricas).
+
 ```sql
 CREATE TYPE auction_status AS ENUM ('active', 'completed', 'cancelled');
 CREATE TYPE auction_opener AS ENUM ('admin', 'owner');
@@ -79,7 +85,9 @@ CREATE INDEX idx_auctions_cell ON auctions(cell_id);
 ```
 
 ### `bids`
+
 Todas las pujas realizadas.
+
 ```sql
 CREATE TABLE bids (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -96,7 +104,9 @@ CREATE INDEX idx_bids_bidder ON bids(bidder_id);
 ```
 
 ### `cell_ownership_history`
+
 Histórico de propiedad para mostrar en la vista detallada.
+
 ```sql
 CREATE TYPE acquisition_type AS ENUM ('auction', 'fixed_price', 'initial');
 
@@ -118,7 +128,9 @@ CREATE INDEX idx_history_cell ON cell_ownership_history(cell_id, acquired_at DES
 ```
 
 ### `transactions`
+
 Registro completo de movimientos de dinero (auditoría).
+
 ```sql
 CREATE TYPE transaction_type AS ENUM ('bid_payment', 'refund', 'system_fee', 'payout');
 CREATE TYPE transaction_status AS ENUM ('pending', 'completed', 'failed', 'refunded');
@@ -145,7 +157,9 @@ CREATE UNIQUE INDEX idx_transactions_provider_id ON transactions(provider, provi
 ```
 
 ### `moderation_queue`
+
 Cola de moderación de imágenes/contenido antes de publicar.
+
 ```sql
 CREATE TYPE moderation_status AS ENUM ('pending', 'approved', 'rejected');
 
@@ -166,7 +180,9 @@ CREATE INDEX idx_moderation_pending ON moderation_queue(submitted_at) WHERE stat
 ```
 
 ### `fixed_price_listings`
+
 Cuando un dueño pone su celda a precio fijo.
+
 ```sql
 CREATE TYPE listing_status AS ENUM ('active', 'sold', 'cancelled');
 
@@ -189,18 +205,19 @@ CREATE INDEX idx_listings_active ON fixed_price_listings(cell_id) WHERE status =
 
 ## RLS Policies (resumen)
 
-| Tabla | SELECT | INSERT | UPDATE | DELETE |
-|-------|--------|--------|--------|--------|
-| profiles | público (todos) | propio | propio | nadie |
-| cells | público | nadie (seed) | service_role / admin | nadie |
-| auctions | público | service_role / admin (admin-opened) o owner (owner-opened) | service_role | nadie |
-| bids | público | bidder = auth.uid() | nadie | nadie |
-| cell_ownership_history | público | service_role | service_role | nadie |
-| transactions | propio | service_role | service_role | nadie |
-| moderation_queue | propio + admin | submitted_by = auth.uid() | admin | nadie |
-| fixed_price_listings | público | owner = auth.uid() (debe ser dueño actual) | owner | owner (cancel) |
+| Tabla                  | SELECT          | INSERT                                                     | UPDATE               | DELETE         |
+| ---------------------- | --------------- | ---------------------------------------------------------- | -------------------- | -------------- |
+| profiles               | público (todos) | propio                                                     | propio               | nadie          |
+| cells                  | público         | nadie (seed)                                               | service_role / admin | nadie          |
+| auctions               | público         | service_role / admin (admin-opened) o owner (owner-opened) | service_role         | nadie          |
+| bids                   | público         | bidder = auth.uid()                                        | nadie                | nadie          |
+| cell_ownership_history | público         | service_role                                               | service_role         | nadie          |
+| transactions           | propio          | service_role                                               | service_role         | nadie          |
+| moderation_queue       | propio + admin  | submitted_by = auth.uid()                                  | admin                | nadie          |
+| fixed_price_listings   | público         | owner = auth.uid() (debe ser dueño actual)                 | owner                | owner (cancel) |
 
 **Notas:**
+
 - "Public" = `SELECT` permitido a usuarios no autenticados (para ver celdas y subastas).
 - "service_role" = solo desde server con la service key (no expuesta al cliente).
 - "admin" = `profiles.is_admin = TRUE`.
