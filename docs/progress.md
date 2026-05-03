@@ -90,10 +90,18 @@
 ### Vercel
 
 - [x] `vercel.json` con región `fra1` (Frankfurt, junto al proyecto Supabase para minimizar latencia)
-- [ ] Crear cuenta Vercel y conectar repositorio (acción del usuario)
-- [ ] Configurar variables de entorno en Vercel dashboard (las 3 de Supabase, el resto se irán añadiendo por fase)
-- [ ] Deploy inicial — la URL de producción saldrá de `main`, las preview de `develop` y PRs
-- [ ] Verificar `/api/health/db` en la URL pública
+- [x] Cuenta Vercel + repositorio conectado (`oscar-doms-projects/celdas`)
+- [x] Variables de entorno en Vercel dashboard (las 3 de Supabase para Production, Preview, Development)
+- [x] Primer release `develop → main` (PR #15) tras resolver conflictos de formato heredados
+- [x] Deploy de producción ✅ — URL pública: **https://celdas.vercel.app**
+- [x] Deployment Protection desactivada para que Production sea públicamente accesible
+- [x] `/api/health/db` validado en producción → HTTP 200, 9 celdas devueltas
+- [x] Vercel desplega automáticamente: `main` → producción, `develop` → preview estable, PRs → preview por rama
+
+### Aprendizajes del setup Vercel
+
+- `pnpm-workspace.yaml` (auto-generado por `create-next-app`) bloqueaba a Vercel para detectar Next.js. Solución: eliminarlo y mover `ignoredBuiltDependencies` a `package.json`.
+- El primer release `develop → main` tuvo conflictos de formato (Prettier aplicado en develop, no en main). Resolución: mantener la versión de develop. Para futuros releases ya no debería pasar porque main hereda el formato de develop.
 
 ### Stripe
 
