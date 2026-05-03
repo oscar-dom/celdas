@@ -118,6 +118,12 @@ pnpm format:check    # Prettier --check . (lo que ejecuta el CI)
 - **Commits:** [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `chore:`, etc.). Sin atribuciones de IA.
 - **Estilo:** TypeScript estricto, ESLint + Prettier (configurado, validado por husky pre-commit).
 
+### División de herramientas
+
+- **Claude Design** → mockups, paleta, componentes UI puros (sin datos). El código que genere debe usar **Next.js 16 App Router + Tailwind v4 + shadcn/ui (style `base-nova`) + TypeScript**.
+- **Claude Code** → backend (Server Actions, webhooks, cron), integraciones (Supabase, Stripe), conectar componentes de Design a datos reales, tests, CI, releases.
+- **Flujo:** los diseños de Design se importan a este repo en `src/components/` (rama `feat/ui-*`) y Code los conecta a Supabase/Stripe vía PR.
+
 ### Git Flow
 
 ```
